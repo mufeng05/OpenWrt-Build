@@ -1,0 +1,83 @@
+name: Build OpenWrt Fullcone
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+
+env:
+  REPO_URL: https://github.com/openwrt/openwrt
+  REPO_BRANCH: main
+  FEEDS_CONF: feeds.conf.default
+  CONFIG_FILE: config/mini.config
+  DIY_feeds_SH: sh/lede_diy-part1.sh
+  DIY_my_SH: sh/mini_diy-part2.sh
+  UPLOAD_BIN_DIR: false
+  UPLOAD_FIRMWARE: false
+  UPLOAD_RELEASE: true
+  TZ: Asia/Shanghai
+  FILE_NAME: MiWifi-mini
+  PRODUCT_NAME: MiWifi-mini
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+      
+    - name: Initialization environment
+      run: |
+        sudo timedatectl set-timezone "Asia/Shanghai"
+        sudo -E apt update -y
+        sudo -E apt full-upgrade -y
+        sudo -E apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
+        bzip2 ccache clang cmake cpio curl device-tree-compiler flex gawk gettext gcc-multilib g++-multilib \
+        git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev \
+        libltdl-dev libmpc-dev libmpfr-dev libncurses-dev libncurses-dev libpython3-dev libreadline-dev \
+        libssl-dev libtool llvm lrzsz genisoimage msmtp ninja-build p7zip p7zip-full patch pkgconf python3 \
+        python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo \
+        uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+
+    - name: Clone source code
+      run: |
+        git clone https://github.com/openwrt/openwrt.git
+
+    - name: Update feeds
+      run: cd openwrt && ./scripts/feeds update -a
+      
+    - name: Install feeds
+      run: cd openwrt && ./scripts/feeds install -a
+
+    - name: Add Turbo ACC
+      run: |
+        cd openwrt
+        curl -sSL https://raw.githubusercontent.com/chenmozhijin/turboacc/luci/add_turboacc.sh -o add_turboacc.sh && bash add_turboacc.sh --no-sfe
+
+    - name: Add Argon Theme
+      run: |
+        cd openwrt/package
+        git clone https://github.com/jerrykuku/luci-theme-argon.git
+      
+    - name: Load custom configuration
+      run: mv config/Fullcone.config openwrt/.config
+
+    - name: Download package
+      id: package
+      run: |
+        cd openwrt
+        make defconfig
+        make download -j8
+
+    - name: Compile the firmware
+      id: compile
+      run: |
+        cd openwrt
+        make -j$(nproc) || make -j1 || make -j1 V=s
+
+    - name: Create release
+      id: release
+      uses: ncipollo/release-action@main
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: openwrt/bin/targets/*/*/*
