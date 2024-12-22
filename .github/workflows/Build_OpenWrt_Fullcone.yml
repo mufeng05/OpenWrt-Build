@@ -4,6 +4,11 @@ on:
   repository_dispatch:
   workflow_dispatch:
 
+env:
+  DEVICE_NAME: Unkonwn
+  DATE: Unkonwn
+  FIRMWARE: Unkonwn
+
 jobs:
   build:
     runs-on: ubuntu-latest
