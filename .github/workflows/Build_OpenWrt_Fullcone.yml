@@ -60,10 +60,17 @@ jobs:
       run: |
         cd openwrt
         make -j$(nproc) || make -j1 || make -j1 V=s
+    
+    - name: Upload firmware directory
+      uses: actions/upload-artifact@main
+      with:
+        name: OpenWrt-Fullcone-$(date +'%Y%m%d%H%M%S')
+        path: openwrt/bin/targets/*/*/*
 
     - name: Create release
       id: release
       uses: ncipollo/release-action@main
       with:
+        tag: OpenWrt-Fullcone-$(date +'%Y%m%d%H%M%S')
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: openwrt/bin/targets/*/*/*
