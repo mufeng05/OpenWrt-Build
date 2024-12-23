@@ -71,6 +71,8 @@ jobs:
 
     - name: Add Wrtbwmon
       run: |
+        git clone https://github.com/brvphoenix/wrtbwmon.git
+        mv wrtbwmon openwrt/package/
         git clone https://github.com/brvphoenix/luci-app-wrtbwmon.git
         mv luci-app-wrtbwmon openwrt/package/
       
