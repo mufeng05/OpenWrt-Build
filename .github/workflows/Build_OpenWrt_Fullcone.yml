@@ -38,6 +38,9 @@ jobs:
     - name: Initialization environment
       run: |
         sudo timedatectl set-timezone "Asia/Shanghai"
+        sudo rm -rf /etc/apt/sources.list.d /usr/share/dotnet /usr/local/lib/android /opt/ghc /etc/mysql /etc/php 2>/dev/null
+        sudo -E apt -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mongodb* moby* || true
+        [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
         sudo -E apt update -y
         sudo -E apt full-upgrade -y
         sudo -E apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
@@ -47,6 +50,10 @@ jobs:
         libssl-dev libtool llvm lrzsz genisoimage msmtp ninja-build p7zip p7zip-full patch pkgconf python3 \
         python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo \
         uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+        sudo -E apt -y autoremove --purge
+        sudo -E systemctl daemon-reload
+        sudo -E apt clean && sudo -E apt autoclean
+        df -Th
 
     - name: Clone source code
       run: |
