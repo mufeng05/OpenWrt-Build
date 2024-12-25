@@ -53,10 +53,10 @@ jobs:
         sudo -E apt -y autoremove --purge
         sudo -E systemctl daemon-reload
         sudo -E apt clean && sudo -E apt autoclean
-        df -Th
 
     - name: Clone source code
       run: |
+        df -Th
         git clone https://github.com/openwrt/openwrt.git
         echo "DATE=$(date "+%Y%m%d_%H%M%S")" >> $GITHUB_ENV
 
