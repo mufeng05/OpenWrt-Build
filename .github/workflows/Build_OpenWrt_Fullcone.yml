@@ -75,13 +75,6 @@ jobs:
       run: |
         cd openwrt/package
         git clone https://github.com/jerrykuku/luci-theme-argon.git
-
-    - name: Add Wrtbwmon
-      run: |
-        git clone https://github.com/brvphoenix/wrtbwmon.git
-        mv wrtbwmon openwrt/package/
-        git clone https://github.com/brvphoenix/luci-app-wrtbwmon.git
-        mv luci-app-wrtbwmon openwrt/package/
       
     - name: Load custom configuration
       run: mv config/Fullcone.config openwrt/.config
