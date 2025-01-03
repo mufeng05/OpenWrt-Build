@@ -8,6 +8,7 @@ env:
   DEVICE_NAME: Unkonwn
   DATE: Unkonwn
   FIRMWARE: Unkonwn
+  PRODUCT_NAME: Fullcone
 
 jobs:
   build:
@@ -84,7 +85,7 @@ jobs:
         mv luci-app-wrtbwmon openwrt/package/
       
     - name: Load custom configuration
-      run: mv config/Fullcone.config openwrt/.config
+      run: mv config/${{ env.PRODUCT_NAME }}.config openwrt/.config
 
     - name: Download package
       id: package
@@ -98,13 +99,13 @@ jobs:
       run: |
         cd openwrt
         make -j$(nproc) || make -j1 || make -j1 V=s
-        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*CONFIG_TARGET_(.*)=y/\1/' > DEVICE_NAME
+        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*CONFIG_TARGET_(.*)_DEVICE.*/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=$(cat DEVICE_NAME)" >> $GITHUB_ENV
     
     - name: Upload bin directory
       uses: actions/upload-artifact@main
       with:
-        name: OpenWrt-Fullcone_bin_${{ env.DEVICE_NAME }}_${{ env.DATE }}
+        name: OpenWrt-${{ env.PRODUCT_NAME }}_bin_${{ env.DEVICE_NAME }}_${{ env.DATE }}
         path: openwrt/bin
 
     - name: Organize files
@@ -120,13 +121,13 @@ jobs:
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
       with:
-        name: OpenWrt-Fullcone_firmware_${{ env.DEVICE_NAME }}_${{ env.DATE }}
+        name: OpenWrt-${{ env.PRODUCT_NAME }}_firmware_${{ env.DEVICE_NAME }}_${{ env.DATE }}
         path: ${{ env.FIRMWARE }}
 
     - name: Create release
       id: release
       uses: ncipollo/release-action@main
       with:
-        tag: OpenWrt-Fullcone_${{ env.DEVICE_NAME }}_${{ env.DATE }}
+        tag: OpenWrt-${{ env.PRODUCT_NAME }}_${{ env.DEVICE_NAME }}_${{ env.DATE }}
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: ${{ env.FIRMWARE }}/*

@@ -1,4 +1,4 @@
-name: Build OpenWrt BE
+name: Build OpenWrt PCDN
 
 on:
   repository_dispatch:
@@ -8,7 +8,7 @@ env:
   DEVICE_NAME: Unkonwn
   DATE: Unkonwn
   FIRMWARE: Unkonwn
-  PRODUCT_NAME: BE
+  PRODUCT_NAME: PCDN
 
 jobs:
   build:
@@ -67,11 +67,16 @@ jobs:
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
 
+    - name: Add Turbo ACC
+      run: |
+        cd openwrt
+        curl -sSL https://raw.githubusercontent.com/chenmozhijin/turboacc/luci/add_turboacc.sh -o add_turboacc.sh && bash add_turboacc.sh --no-sfe
+
     - name: Add Argon Theme
       run: |
         cd openwrt/package
         git clone https://github.com/jerrykuku/luci-theme-argon.git
-    
+      
     - name: Load custom configuration
       run: mv config/${{ env.PRODUCT_NAME }}.config openwrt/.config
 
