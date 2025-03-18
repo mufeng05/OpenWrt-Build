@@ -131,13 +131,13 @@ jobs:
 
     - name: Generate release informations
       run: |
+        echo "# Kernel Version" | tee Release.md
+        echo "" | tee -a Release.md
+        echo "${{ env.KERNEL_VERSION }}" | tee -a Release.md
+        echo "" | tee -a Release.md
+        echo "## SHA256" | tee -a Release.md
+        echo "" | tee -a Release.md
         cat <<EOF | sed -E 's/^  //' | tee Release.md
-          # Kernel Version
-
-          ${{ env.KERNEL_VERSION }}
-
-          ## SHA256
-
           $(cat sha256sum | awk '{printf "%s: `%s`\n", basename($2), $1}')
         EOF
 
