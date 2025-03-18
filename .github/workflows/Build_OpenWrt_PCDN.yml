@@ -5,10 +5,13 @@ on:
   workflow_dispatch:
 
 env:
-  DEVICE_NAME: Unkonwn
-  DATE: Unkonwn
-  FIRMWARE: Unkonwn
+  # DEVICE_NAME: Unkonwn
+  # DATE: Unkonwn
+  # FIRMWARE: Unkonwn
   PRODUCT_NAME: PCDN
+  KERNEL_MAJOR: "6.6"
+  # KERNEL_MINOR: Unkonwn
+  # KERNEL_VERSION: Unkonwn
 
 jobs:
   build:
@@ -53,6 +56,13 @@ jobs:
       with:
         repository: openwrt/openwrt
         path: openwrt
+
+    - name: Get kernel version
+      run: |
+        KERNEL_MINOR=$(awk -F ' = ' -v major="$KERNEL_MAJOR" '$1 == "LINUX_VERSION-" major {print $2}' openwrt/include/kernel-$KERNEL_MAJOR)
+        KERNEL_VERSION="$KERNEL_MAJOR$KERNEL_MINOR"
+        echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
+
 
     - name: Update and install feeds
       run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
@@ -122,7 +132,13 @@ jobs:
     - name: Generate release informations
       run: |
         cat <<EOF | sed -E 's/^  //' | tee Release.md
-          $(cat sha256sum | awk '{printf "%s: `%s`\n", $2, $1}')
+          # Kernel Version
+
+          ${{ env.KERNEL_VERSION }}
+
+          ## SHA256
+
+          $(cat sha256sum | awk '{printf "%s: `%s`\n", basename($2), $1}')
         EOF
 
     - name: Create release
