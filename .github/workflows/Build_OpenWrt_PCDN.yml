@@ -67,6 +67,11 @@ jobs:
       with:
         repository: jerrykuku/luci-theme-argon
         path: openwrt/package/luci-theme-argon
+
+    - name: Set Connection Tracking Limit
+      run: |
+        echo "net.netfilter.nf_conntrack_max=128000" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
+      
       
     - name: Load custom configuration
       run: mv config/${{ env.PRODUCT_NAME }}.config openwrt/.config
@@ -108,6 +113,18 @@ jobs:
         name: OpenWrt-${{ env.PRODUCT_NAME }}_firmware_${{ env.DEVICE_NAME }}_${{ env.DATE }}
         path: ${{ env.FIRMWARE }}
 
+    - name: Hash images
+      run: |
+        for f in ${{ env.FIRMWARE }}/*.img; do
+          sha256sum "$f" | tee -a sha256sum
+        done
+
+    - name: Generate release informations
+      run: |
+        cat <<EOF | sed -E 's/^  //' | tee Release.md
+          $(cat sha256sum | awk '{printf "%s: `%s`\n", $2, $1}')
+        EOF
+
     - name: Create release
       id: release
       uses: ncipollo/release-action@main
@@ -115,3 +132,4 @@ jobs:
         tag: OpenWrt-${{ env.PRODUCT_NAME }}_${{ env.DEVICE_NAME }}_${{ env.DATE }}
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: ${{ env.FIRMWARE }}/*
+        bodyFile: Release.md
