@@ -61,7 +61,7 @@ jobs:
       run: |
         cat <<EOF | sed -E 's/^  //' | tee Release.md
           # Sources
-          OpenWrt: [${OPENWRT_REPO}@${OPENWRT_REF}](https://github.com/${OPENWRT_REPO}/tree/${OPENWRT_REF}) ([\`${OPENWRT_SHA}\`](https://github.com/${OPENWRT_REPO}/tree/${OPENWRT_REF}))
+          OpenWrt: [${OPENWRT_REPO}@${OPENWRT_REF}](https://github.com/${OPENWRT_REPO}/tree/${OPENWRT_REF}) ([\`${OPENWRT_SHA}\`](https://github.com/${OPENWRT_REPO}/tree/${OPENWRT_SHA}))
 
         EOF
 
