@@ -58,7 +58,7 @@ jobs:
             DEVICE_NAME=$(cat "$DEVICE_NAME_FILE")
             echo "DEVICE_NAME=$DEVICE_NAME" >> $GITHUB_ENV
         fi
-        echo "TAG=OpenWrt-${{ env.PRODUCT_NAME }}_${{ env.DEVICE_NAME }}_${{ env.DATE }}" >> $GITHUB_ENV
+        echo "TAG=OpenWrt-${{ env.PRODUCT_NAME }}_${DEVICE_NAME}_${DATE}" >> $GITHUB_ENV
         echo "OPENWRT_SHA=$(curl https://api.github.com/repos/${OPENWRT_REPO}/commits/${OPENWRT_REF} | jq -r .sha)" >> $GITHUB_ENV
         df -Th
 
