@@ -12,6 +12,8 @@ env:
   KERNEL_MAJOR: "6.6"
   # KERNEL_MINOR: Unkonwn
   # KERNEL_VERSION: Unkonwn
+  OPENWRT_REPO: openwrt/openwrt
+  OPENWRT_REF: main
 
 jobs:
   build:
@@ -49,13 +51,26 @@ jobs:
         gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev \
         python3-setuptools rsync swig unzip zlib1g-dev file wget
         echo "DATE=$(date "+%Y%m%d_%H%M%S")" >> $GITHUB_ENV
+        grep '^CONFIG_TARGET.*DEVICE.*=y' config/${{ env.PRODUCT_NAME }}.config | sed -r 's/.*CONFIG_TARGET_(.*)_DEVICE.*/\1/' > DEVICE_NAME
+        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=$(cat DEVICE_NAME)" >> $GITHUB_ENV
+        echo "TAG=OpenWrt-${{ env.PRODUCT_NAME }}_${{ env.DEVICE_NAME }}_${{ env.DATE }}" >> $GITHUB_ENV
+        echo "OPENWRT_SHA=$(curl https://api.github.com/repos/${OPENWRT_REPO}/commits/${OPENWRT_REF} | jq -r .sha)" >> $GITHUB_ENV
         df -Th
+
+    - name: Generate release informations 1
+      run: |
+        cat <<EOF | sed -E 's/^  //' | tee Release.md
+          # Sources
+          OpenWrt: [${OPENWRT_REPO}@${OPENWRT_REF}](https://github.com/${OPENWRT_REPO}/tree/${OPENWRT_REF}) ([\`${OPENWRT_SHA}\`](https://github.com/${OPENWRT_REPO}/tree/${OPENWRT_REF}))
+
+        EOF
 
     - name: Clone source code
       uses: actions/checkout@v4
       with:
         repository: openwrt/openwrt
         path: openwrt
+        ref: ${{ env.OPENWRT_SHA }}
 
     - name: Get kernel version
       run: |
@@ -98,8 +113,6 @@ jobs:
       run: |
         cd openwrt
         make -j$(nproc) || make -j1 || make -j1 V=s
-        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*CONFIG_TARGET_(.*)_DEVICE.*/\1/' > DEVICE_NAME
-        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=$(cat DEVICE_NAME)" >> $GITHUB_ENV
     
     - name: Upload bin directory
       uses: actions/upload-artifact@main
@@ -129,14 +142,14 @@ jobs:
           sha256sum "$f" | tee -a sha256sum
         done
 
-    - name: Generate release informations
+    - name: Generate release informations 2
       run: |
         cat <<EOF | sed -E 's/^  //' | tee Release.md
           # Kernel Version
  
           ${{ env.KERNEL_VERSION }}
  
-          ## SHA256
+          # SHA256
 
           $(awk '{gsub(".*/", "", $2); printf "%s: `%s`\n", $2, $1}' sha256sum)
         EOF
@@ -145,7 +158,7 @@ jobs:
       id: release
       uses: ncipollo/release-action@main
       with:
-        tag: OpenWrt-${{ env.PRODUCT_NAME }}_${{ env.DEVICE_NAME }}_${{ env.DATE }}
+        tag: ${{ env.TAG }}
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: ${{ env.FIRMWARE }}/*
         bodyFile: Release.md
