@@ -13,7 +13,7 @@ env:
   # KERNEL_MINOR: Unkonwn
   # KERNEL_VERSION: Unkonwn
   OPENWRT_REPO: openwrt/openwrt
-  OPENWRT_REF: main
+  OPENWRT_REF: openwrt-24.10
 
 jobs:
   build:
