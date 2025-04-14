@@ -1,19 +1,19 @@
-name: Build OpenWrt PCDN
-
+name: Build OpenWrt PCDN-TEST
 on:
   repository_dispatch:
   workflow_dispatch:
 
 env:
-  # DEVICE_NAME: Unkonwn
-  # DATE: Unkonwn
-  # FIRMWARE: Unkonwn
-  PRODUCT_NAME: PCDN
-  KERNEL_MAJOR: "6.6"
-  # KERNEL_MINOR: Unkonwn
-  # KERNEL_VERSION: Unkonwn
-  OPENWRT_REPO: openwrt/openwrt
-  OPENWRT_REF: main
+  DEVICE_NAME:
+  DATE:
+  FIRMWARE:
+  PRODUCT_NAME: PCDN-TEST
+  KERNEL_MAJOR: "6.12"
+  KERNEL_VERSION:
+  OPENWRT_REPO: namiltd/openwrt
+  OPENWRT_REF: 6.12
+  OPENWRT_SHA:
+  TAG:
 
 jobs:
   build:
@@ -82,7 +82,7 @@ jobs:
     - name: Add Turbo ACC
       run: |
         cd openwrt
-        curl -sSL https://raw.githubusercontent.com/chenmozhijin/turboacc/luci/add_turboacc.sh -o add_turboacc.sh && bash add_turboacc.sh --no-sfe
+        curl -sSL https://raw.githubusercontent.com/mufeng05/turboacc/luci/add_turboacc.sh -o add_turboacc.sh && bash add_turboacc.sh --no-sfe
 
     - name: Add Argon Theme
       uses: actions/checkout@v4
