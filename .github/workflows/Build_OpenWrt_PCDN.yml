@@ -95,7 +95,7 @@ jobs:
         echo "net.netfilter.nf_conntrack_max=128000" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
       
     - name: Patch r8168
-      run: mv patches/010-enable_TX_RSS_disable_ASPM.patch.patch openwrt/package/kernel/r8168/patches/010-enable_TX_RSS_disable_ASPM.patch
+      run: cp patches/010-enable_TX_RSS_disable_ASPM.patch.patch openwrt/package/kernel/r8168/patches/
 
     - name: Load custom configuration
       run: mv config/${{ env.PRODUCT_NAME }}.config openwrt/.config
