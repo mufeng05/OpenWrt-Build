@@ -10,8 +10,8 @@ env:
   PRODUCT_NAME: PCDN-TEST
   KERNEL_MAJOR: "6.12"
   KERNEL_VERSION:
-  OPENWRT_REPO: namiltd/openwrt
-  OPENWRT_REF: 6.12
+  OPENWRT_REPO: openwrt/openwrt
+  OPENWRT_REF: main
   OPENWRT_SHA:
   TAG:
 
