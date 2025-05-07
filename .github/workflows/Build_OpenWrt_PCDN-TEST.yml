@@ -82,7 +82,7 @@ jobs:
     - name: Add Turbo ACC
       run: |
         cd openwrt
-        curl -sSL https://raw.githubusercontent.com/chenmozhijin/turboacc/luci/add_turboacc.sh -o add_turboacc.sh && bash add_turboacc.sh --no-sfe
+        curl -sSL https://raw.githubusercontent.com/mufeng05/turboacc/luci/add_turboacc.sh -o add_turboacc.sh && bash add_turboacc.sh --no-sfe
 
     - name: Add Argon Theme
       uses: actions/checkout@v4
