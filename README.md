@@ -1,1 +1,1 @@
-# Build OpenWRt Fullcone
+# Build OpenWrt
