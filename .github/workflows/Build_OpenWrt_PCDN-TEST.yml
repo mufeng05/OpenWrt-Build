@@ -92,7 +92,7 @@ jobs:
 
     - name: Set Connection Tracking Limit
       run: |
-        echo "net.netfilter.nf_conntrack_max=128000" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
+        echo "net.netfilter.nf_conntrack_max=256000" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
 
     - name: Load custom configuration
       run: cp config/${{ env.PRODUCT_NAME }}.config openwrt/.config
