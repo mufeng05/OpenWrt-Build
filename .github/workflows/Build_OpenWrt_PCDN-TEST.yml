@@ -92,14 +92,7 @@ jobs:
 
     - name: Set Connection Tracking
       run: |
-        echo "net.netfilter.nf_conntrack_max=524288" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
-        echo "net.netfilter.nf_conntrack_buckets=262144" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
-        echo "net.netfilter.nf_conntrack_tcp_timeout_established=600" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
-        echo "net.netfilter.nf_conntrack_tcp_timeout_time_wait=30" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
-        echo "net.netfilter.nf_conntrack_tcp_timeout_fin_wait=30" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
-        echo "net.netfilter.nf_conntrack_tcp_timeout_close_wait=30" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
-        echo "net.netfilter.nf_conntrack_udp_timeout=30" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
-        echo "net.netfilter.nf_conntrack_udp_timeout_stream=60" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
+        echo "net.netfilter.nf_conntrack_max=512000" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
 
     - name: Load custom configuration
       run: cp config/${{ env.PRODUCT_NAME }}.config openwrt/.config
