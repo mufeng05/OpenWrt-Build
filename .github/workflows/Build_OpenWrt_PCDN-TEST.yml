@@ -82,7 +82,7 @@ jobs:
     - name: Add Turbo ACC
       run: |
         cd openwrt
-        curl -sSL https://raw.githubusercontent.com/mufeng05/turboacc/luci/add_turboacc.sh -o add_turboacc.sh && bash add_turboacc.sh --no-sfe
+        curl -sSL https://raw.githubusercontent.com/chenmozhijin/turboacc/luci/add_turboacc.sh -o add_turboacc.sh && bash add_turboacc.sh --no-sfe
 
     - name: Add Argon Theme
       uses: actions/checkout@v4
@@ -92,7 +92,7 @@ jobs:
 
     - name: Set Connection Tracking
       run: |
-        echo "net.netfilter.nf_conntrack_max=512000" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
+        echo "net.netfilter.nf_conntrack_max=524288" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
 
     - name: Load custom configuration
       run: cp config/${{ env.PRODUCT_NAME }}.config openwrt/.config
