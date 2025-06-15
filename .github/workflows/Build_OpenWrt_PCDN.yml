@@ -1,19 +1,19 @@
 name: Build OpenWrt PCDN
-
 on:
   repository_dispatch:
   workflow_dispatch:
 
 env:
-  # DEVICE_NAME: Unkonwn
-  # DATE: Unkonwn
-  # FIRMWARE: Unkonwn
+  DEVICE_NAME:
+  DATE:
+  FIRMWARE:
   PRODUCT_NAME: PCDN
-  KERNEL_MAJOR: "6.6"
-  # KERNEL_MINOR: Unkonwn
-  # KERNEL_VERSION: Unkonwn
+  KERNEL_MAJOR: "6.12"
+  KERNEL_VERSION:
   OPENWRT_REPO: openwrt/openwrt
   OPENWRT_REF: main
+  OPENWRT_SHA:
+  TAG:
 
 jobs:
   build:
@@ -71,7 +71,7 @@ jobs:
 
     - name: Get kernel version
       run: |
-        KERNEL_MINOR=$(awk -F ' = ' -v major="$KERNEL_MAJOR" '$1 == "LINUX_VERSION-" major {print $2}' openwrt/include/kernel-$KERNEL_MAJOR)
+        KERNEL_MINOR=$(awk -F ' = ' -v major="$KERNEL_MAJOR" '$1 == "LINUX_VERSION-" major {print $2}' openwrt/target/linux/generic/kernel-$KERNEL_MAJOR)
         KERNEL_VERSION="$KERNEL_MAJOR$KERNEL_MINOR"
         echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
 
@@ -90,15 +90,12 @@ jobs:
         repository: jerrykuku/luci-theme-argon
         path: openwrt/package/luci-theme-argon
 
-    - name: Set Connection Tracking Limit
+    - name: Set Connection Tracking
       run: |
-        echo "net.netfilter.nf_conntrack_max=128000" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
-      
-    - name: Patch r8168
-      run: cp patches/010-enable_TX_RSS_disable_ASPM.patch.patch openwrt/package/kernel/r8168/patches/
+        echo "net.netfilter.nf_conntrack_max=524288" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
 
     - name: Load custom configuration
-      run: mv config/${{ env.PRODUCT_NAME }}.config openwrt/.config
+      run: cp config/${{ env.PRODUCT_NAME }}.config openwrt/.config
 
     - name: Download package
       id: package
@@ -111,7 +108,7 @@ jobs:
       id: compile
       run: |
         cd openwrt
-        make -j$(nproc) || make -j1 || make -j1 V=s
+        make -j$(nproc) || make -j1 V=s
     
     - name: Upload bin directory
       uses: actions/upload-artifact@main
