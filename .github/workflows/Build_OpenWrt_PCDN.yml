@@ -1,5 +1,7 @@
 name: Build OpenWrt PCDN
 on:
+  schedule:
+     - cron: '0 1 * * *'
   repository_dispatch:
   workflow_dispatch:
 
