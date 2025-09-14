@@ -1,7 +1,5 @@
 name: Build OpenWrt PCDN
 on:
-  schedule:
-     - cron: '0 0 * * *'
   repository_dispatch:
   workflow_dispatch:
 
@@ -86,10 +84,11 @@ jobs:
         cd openwrt
         curl -sSL https://raw.githubusercontent.com/chenmozhijin/turboacc/luci/add_turboacc.sh -o add_turboacc.sh && bash add_turboacc.sh --no-sfe
 
-    - name: Add Argon Theme
+    - name: Add Argon Theme (with PR #617)
       uses: actions/checkout@v4
       with:
         repository: jerrykuku/luci-theme-argon
+        ref: refs/pull/617/merge
         path: openwrt/package/luci-theme-argon
 
     - name: Set Connection Tracking
