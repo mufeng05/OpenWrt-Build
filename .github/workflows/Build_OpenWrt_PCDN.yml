@@ -81,8 +81,11 @@ jobs:
         echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
 
 
-    - name: Update and install feeds
-      run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
+    - name: Update feeds
+      run: cd openwrt && ./scripts/feeds update -a
+
+    - name: Install feeds
+      run: cd openwrt && ./scripts/feeds install -a
 
     - name: Add Turbo ACC
       run: |
