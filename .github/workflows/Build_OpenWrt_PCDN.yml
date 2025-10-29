@@ -100,13 +100,17 @@ jobs:
 
     - name: Modify sysctl settings
       run: |
-        echo "net.core.wmem.max=16777216" >> ./openwrt/package/base-files/files/etc/sysctl.conf
-        echo "net.core.rmem.max=16777216" >> ./openwrt/package/base-files/files/etc/sysctl.conf
-        echo "net.netfilter.nf_conntrack_tcp_timeout_established=600" >> ./openwrt/package/base-files/files/etc/sysctl.conf
-        echo "net.netfilter.nf_conntrack_udp_timeout=30" >> ./openwrt/package/base-files/files/etc/sysctl.conf
-        echo "net.netfilter.nf_conntrack_udp_timeout_stream=60" >> ./openwrt/package/base-files/files/etc/sysctl.conf
-        echo "net.netfilter.nf_conntrack_max=524288" >> ./openwrt/package/base-files/files/etc/sysctl.conf
-        echo "net.netfilter.nf_conntrack_buckets=262144" >> ./openwrt/package/base-files/files/etc/sysctl.conf
+        cd openwrt
+        mkdir -p files/etc
+        cat <<'EOF' > files/etc/sysctl.conf
+        net.core.wmem.max=16777216
+        net.core.rmem.max=16777216
+        net.netfilter.nf_conntrack_tcp_timeout_established=600
+        net.netfilter.nf_conntrack_udp_timeout=30
+        net.netfilter.nf_conntrack_udp_timeout_stream=60
+        net.netfilter.nf_conntrack_max=524288
+        net.netfilter.nf_conntrack_buckets=262144
+        EOF
 
     - name: Load custom configuration
       run: cp config/${{ env.PRODUCT_NAME }}.config openwrt/.config
