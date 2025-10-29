@@ -95,9 +95,15 @@ jobs:
         repository: jerrykuku/luci-theme-argon
         path: openwrt/package/luci-theme-argon
 
-    - name: Set Connection Tracking
+    - name: Modify sysctl settings
       run: |
-        echo "net.netfilter.nf_conntrack_max=524288" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
+        echo "net.core.wmem.max=16777216\nnet.core.rmem.max=16777216" >> ./openwrt/package/kernel/linux/files/sysctl-net-core.conf
+        sed -i \
+        -e 's/^net\.netfilter\.nf_conntrack_tcp_timeout_established=.*/net.netfilter.nf_conntrack_tcp_timeout_established=600/' \
+        -e 's/^net\.netfilter\.nf_conntrack_udp_timeout=.*/net.netfilter.nf_conntrack_udp_timeout=30/' \
+        -e 's/^net\.netfilter\.nf_conntrack_udp_timeout_stream=.*/net.netfilter.nf_conntrack_udp_timeout_stream=60/' \
+        -e '$a net.netfilter.nf_conntrack_max=524288\nnet.netfilter.nf_conntrack_buckets=262144' \
+        ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
 
     - name: Load custom configuration
       run: cp config/${{ env.PRODUCT_NAME }}.config openwrt/.config
