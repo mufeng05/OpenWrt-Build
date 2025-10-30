@@ -101,7 +101,7 @@ jobs:
     - name: Modify sysctl settings
       run: |
         cd openwrt
-        mkdir -p files/etc
+        mkdir -p files/etc/sysctl.d
         cat <<'EOF' > files/etc/sysctl.d/99-custom.conf
         net.core.wmem.max=16777216
         net.core.rmem.max=16777216
