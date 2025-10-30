@@ -1,19 +1,19 @@
 name: Build OpenWrt LEDE
-
 on:
   repository_dispatch:
   workflow_dispatch:
 
 env:
-  # DEVICE_NAME: Unkonwn
-  # DATE: Unkonwn
-  # FIRMWARE: Unkonwn
+  DEVICE_NAME:
+  DATE:
+  FIRMWARE:
   PRODUCT_NAME: LEDE
   KERNEL_MAJOR: "6.12"
-  # KERNEL_MINOR: Unkonwn
-  # KERNEL_VERSION: Unkonwn
+  KERNEL_VERSION:
   OPENWRT_REPO: coolsnowwolf/lede
   OPENWRT_REF: master
+  OPENWRT_SHA:
+  TAG:
 
 jobs:
   build:
@@ -76,18 +76,28 @@ jobs:
         echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
 
 
-    - name: Update and install feeds
-      run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
+    - name: Update feeds
+      run: cd openwrt && ./scripts/feeds update -a
 
-    - name: Set Connection Tracking Limit
+    - name: Install feeds
+      run: cd openwrt && ./scripts/feeds install -a
+
+    - name: Modify sysctl settings
       run: |
-        echo "net.netfilter.nf_conntrack_max=128000" >> ./openwrt/package/kernel/linux/files/sysctl-nf-conntrack.conf
-      
-    - name: Patch r8168
-      run: mv patches/010-enable_TX_RSS_disable_ASPM.patch.patch openwrt/package/kernel/r8168/patches/010-enable_TX_RSS_disable_ASPM.patch
+        cd openwrt
+        mkdir -p files/etc/sysctl.d
+        cat <<'EOF' > files/etc/sysctl.d/99-custom.conf
+        net.core.wmem.max=16777216
+        net.core.rmem.max=16777216
+        net.netfilter.nf_conntrack_tcp_timeout_established=600
+        net.netfilter.nf_conntrack_udp_timeout=30
+        net.netfilter.nf_conntrack_udp_timeout_stream=60
+        net.netfilter.nf_conntrack_max=524288
+        net.netfilter.nf_conntrack_buckets=262144
+        EOF
 
     - name: Load custom configuration
-      run: mv config/${{ env.PRODUCT_NAME }}.config openwrt/.config
+      run: cp config/${{ env.PRODUCT_NAME }}.config openwrt/.config
 
     - name: Download package
       id: package
@@ -100,7 +110,7 @@ jobs:
       id: compile
       run: |
         cd openwrt
-        make -j$(nproc) || make -j1 || make -j1 V=s
+        make -j$(nproc) || make -j1 V=s
     
     - name: Upload bin directory
       uses: actions/upload-artifact@main
