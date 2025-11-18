@@ -4,9 +4,6 @@ on:
      - cron: '0 0 * * *'
   repository_dispatch:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 env:
   DEVICE_NAME:
