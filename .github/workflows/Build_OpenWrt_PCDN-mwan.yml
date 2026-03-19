@@ -1,5 +1,7 @@
-name: Build OpenWrt PCDN fw3
+name: Build OpenWrt PCDN mwan
 on:
+  schedule:
+     - cron: '0 0 * * *'
   repository_dispatch:
   workflow_dispatch:
 
@@ -7,7 +9,7 @@ env:
   DEVICE_NAME:
   DATE:
   FIRMWARE:
-  PRODUCT_NAME: PCDN-fw3
+  PRODUCT_NAME: PCDN-mwan
   KERNEL_MAJOR: "6.12"
   KERNEL_VERSION:
   OPENWRT_REPO: openwrt/openwrt
@@ -94,18 +96,6 @@ jobs:
       with:
         repository: jerrykuku/luci-theme-argon
         path: openwrt/package/luci-theme-argon
-
-    - name: Modify sysctl settings
-      run: |
-        cd openwrt
-        mkdir -p files/etc/sysctl.d
-        cat <<'EOF' > files/etc/sysctl.d/99-custom.conf
-        net.core.wmem_max=16777216
-        net.core.rmem_max=16777216
-        net.netfilter.nf_conntrack_max=524288
-        net.netfilter.nf_conntrack_expect_max=16384
-        net.netfilter.nf_conntrack_buckets=262144
-        EOF
 
     - name: Load custom configuration
       run: cp config/${{ env.PRODUCT_NAME }}.config openwrt/.config

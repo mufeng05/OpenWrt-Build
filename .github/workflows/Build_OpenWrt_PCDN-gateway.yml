@@ -1,4 +1,4 @@
-name: Build OpenWrt gateway
+name: Build OpenWrt PCDN gateway
 on:
   schedule:
      - cron: '0 0 * * *'
@@ -9,7 +9,7 @@ env:
   DEVICE_NAME:
   DATE:
   FIRMWARE:
-  PRODUCT_NAME: gateway
+  PRODUCT_NAME: PCDN-gateway
   KERNEL_MAJOR: "6.12"
   KERNEL_VERSION:
   OPENWRT_REPO: openwrt/openwrt
