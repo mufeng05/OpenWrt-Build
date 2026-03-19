@@ -24,7 +24,7 @@ jobs:
     steps:
 
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     
 
     - name: Check server configuration
@@ -67,7 +67,7 @@ jobs:
         df -Th
 
     - name: Clone source code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: ${{ env.OPENWRT_REPO }}
         path: openwrt
@@ -92,7 +92,7 @@ jobs:
         curl -sSL https://raw.githubusercontent.com/mufeng05/turboacc/main/add_turboacc.sh -o add_turboacc.sh && bash add_turboacc.sh
 
     - name: Add Argon Theme
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: jerrykuku/luci-theme-argon
         path: openwrt/package/luci-theme-argon
