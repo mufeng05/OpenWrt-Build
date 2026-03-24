@@ -97,6 +97,12 @@ jobs:
         repository: jerrykuku/luci-theme-argon
         path: openwrt/package/luci-theme-argon
 
+    - name: Add EasyTier
+      uses: actions/checkout@v6
+      with:
+        repository: EasyTier/luci-app-easytier
+        path: openwrt/package/luci-app-easytier
+
     - name: Load custom configuration
       run: cp config/${{ env.PRODUCT_NAME }}.config openwrt/.config
 
