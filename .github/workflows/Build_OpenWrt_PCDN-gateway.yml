@@ -10,7 +10,7 @@ env:
   DATE:
   FIRMWARE:
   PRODUCT_NAME: PCDN-gateway
-  KERNEL_MAJOR: "6.12"
+  KERNEL_MAJOR: "6.18"
   KERNEL_VERSION:
   OPENWRT_REPO: openwrt/openwrt
   OPENWRT_REF: main
