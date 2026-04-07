@@ -16,6 +16,7 @@ env:
   OPENWRT_REF: main
   OPENWRT_SHA:
   TAG:
+  EASYTIER_VERSION: "2.6.0"
 
 jobs:
   build:
