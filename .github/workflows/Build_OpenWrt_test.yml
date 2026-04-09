@@ -10,7 +10,7 @@ env:
   DATE:
   FIRMWARE:
   PRODUCT_NAME: test
-  KERNEL_MAJOR: "6.12"
+  KERNEL_MAJOR: "6.18"
   KERNEL_VERSION:
   OPENWRT_REPO: openwrt/openwrt
   OPENWRT_REF: main
@@ -86,22 +86,10 @@ jobs:
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: Add Turbo ACC
+    - name: Add fullcone
       run: |
         cd openwrt
-        curl -sSL https://raw.githubusercontent.com/mufeng05/turboacc/main/add_turboacc.sh -o add_turboacc.sh && bash add_turboacc.sh
-
-    - name: Add Argon Theme
-      uses: actions/checkout@v6
-      with:
-        repository: jerrykuku/luci-theme-argon
-        path: openwrt/package/luci-theme-argon
-
-    - name: Add EasyTier
-      uses: actions/checkout@v6
-      with:
-        repository: EasyTier/luci-app-easytier
-        path: openwrt/package/luci-app-easytier
+        curl -sSL https://raw.githubusercontent.com/mufeng05/openwrt-sonic-fullcone/master/add_sonic_fullcone.sh | bash
 
     - name: Load custom configuration
       run: cp config/${{ env.PRODUCT_NAME }}.config openwrt/.config
