@@ -91,6 +91,12 @@ jobs:
         cd openwrt
         curl -sSL https://raw.githubusercontent.com/mufeng05/openwrt-sonic-fullcone/master/add_sonic_fullcone.sh | bash
 
+    - name: Add Argon Theme
+      uses: actions/checkout@v6
+      with:
+        repository: jerrykuku/luci-theme-argon
+        path: openwrt/package/luci-theme-argon
+
     - name: Load custom configuration
       run: cp config/${{ env.PRODUCT_NAME }}.config openwrt/.config
 
