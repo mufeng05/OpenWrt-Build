@@ -87,10 +87,10 @@ jobs:
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: Add Turbo ACC
+    - name: Add Sonic Fullcone
       run: |
         cd openwrt
-        curl -sSL https://raw.githubusercontent.com/mufeng05/turboacc/main/add_turboacc.sh -o add_turboacc.sh && bash add_turboacc.sh
+        curl -sSL https://raw.githubusercontent.com/mufeng05/openwrt-sonic-fullcone/master/add_sonic_fullcone.sh | bash
 
     - name: Add Argon Theme
       uses: actions/checkout@v6
