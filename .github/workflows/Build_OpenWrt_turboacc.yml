@@ -7,7 +7,7 @@ env:
   DEVICE_NAME:
   DATE:
   FIRMWARE:
-  PRODUCT_NAME: test
+  PRODUCT_NAME: turboacc
   KERNEL_MAJOR: "6.18"
   KERNEL_VERSION:
   OPENWRT_REPO: openwrt/openwrt
