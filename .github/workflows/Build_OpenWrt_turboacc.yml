@@ -1,4 +1,4 @@
-name: Build OpenWrt test
+name: Build OpenWrt turboacc
 on:
   repository_dispatch:
   workflow_dispatch:
@@ -84,10 +84,10 @@ jobs:
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: Add fullcone
+    - name: Add Turbo ACC
       run: |
         cd openwrt
-        curl -sSL https://raw.githubusercontent.com/mufeng05/openwrt-sonic-fullcone/master/add_sonic_fullcone.sh | bash
+        curl -sSL https://raw.githubusercontent.com/mufeng05/turboacc/main/add_turboacc.sh -o add_turboacc.sh && bash add_turboacc.sh
 
     - name: Add Argon Theme
       uses: actions/checkout@v6
