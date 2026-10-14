@@ -11,7 +11,9 @@
 | PCDN-fw3 | openwrt/openwrt@main | Turbo ACC、Argon 主题、sysctl 调优 | 手动 |
 | PCDN-mwan | openwrt/openwrt@main | Turbo ACC、Argon 主题 | 手动 |
 | turboacc | openwrt/openwrt@main | Turbo ACC、Argon 主题 | 手动 |
+| gateway | openwrt/openwrt@main | Turbo ACC、Argon 主题 | 手动 |
 | proxy | openwrt/openwrt@main | — | 手动 |
+| home-clash | openwrt/openwrt@main | — | 手动 |
 | BE | openwrt/openwrt@main | Argon 主题 | 手动 |
 | Fullcone | openwrt/openwrt@main | Turbo ACC（chenmozhijin 版，不含 SFE）、Argon 主题、wrtbwmon | 手动 |
 | LEDE | coolsnowwolf/lede@master | sysctl 调优 | 手动 |

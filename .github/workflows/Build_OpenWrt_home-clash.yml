@@ -1,0 +1,12 @@
+name: Build OpenWrt home-clash
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      product: home-clash
+    permissions:
+      contents: write
