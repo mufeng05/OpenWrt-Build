@@ -25,7 +25,7 @@
   build.yml                    # 通用构建流程（可复用 workflow）
   Build_OpenWrt_<产品>.yml      # 各产品入口：触发条件 + 调用 build.yml
 products/<产品>/
-  config                       # 配置
+  config                       # 配置（diffconfig 格式）
   product.env                  # 源码仓库、分支，以及 CI 额外安装的主机软件包
   customize.sh                 # 可选：添加第三方软件包、打补丁等
   files/                       # 可选：直接放进固件的文件，如 etc/sysctl.d/99-custom.conf
@@ -43,6 +43,24 @@ patches/r8168/                 # 备用补丁，目前没有产品使用（见�
 3. `make download`，`make`
 4. 上传 `bin` 目录和固件目录为 artifact
 5. 创建 release，tag 为 `OpenWrt-<产品>_<平台>_<日期>`，说明中包含源码 commit、内核版本和镜像的 SHA256
+
+## 修改配置
+
+`config` 采用 diffconfig 格式，只记录与默认值不同的选项；上游默认值变化时会自动跟随。修改步骤：
+
+```bash
+# 源码仓库和分支与 product.env 一致；需要一个全新的源码树
+git clone https://github.com/openwrt/openwrt.git && cd openwrt
+./scripts/feeds update -a && ./scripts/feeds install -a
+
+# 应用产品定制并加载当前配置
+bash ../OpenWrt-Build/scripts/prepare-tree.sh PCDN-gateway .
+
+make menuconfig
+./scripts/diffconfig.sh > ../OpenWrt-Build/products/PCDN-gateway/config
+```
+
+直接放入完整的 `.config` 也可以编译，但不推荐。
 
 ## 新增产品
 
