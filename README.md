@@ -35,6 +35,7 @@ scripts/
   product-env.sh               # 读取 product.env
   prepare-tree.sh              # 应用产品定制并生成 .config
   collect-firmware.sh          # 整理固件、生成 release 说明
+  prune-releases.sh            # 清理旧 release
 patches/r8168/                 # 备用补丁，目前没有产品使用（见下文）
 ```
 
@@ -45,6 +46,7 @@ patches/r8168/                 # 备用补丁，目前没有产品使用（见�
 3. `make download`，`make`
 4. 上传 `bin` 目录为 artifact（保留 7 天）
 5. 创建 release，tag 为 `OpenWrt-<产品>_<平台>_<日期>`，说明中包含源码 commit、内核版本和镜像的 SHA256
+6. 只保留该产品最近 10 个 release，更早的连同 tag 一起删除（在产品入口 workflow 中用 `keep-releases` 调整，`0` 表示不清理）
 
 ## 修改配置
 

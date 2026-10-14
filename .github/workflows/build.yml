@@ -9,6 +9,11 @@ on:
         description: 产品名，即 products/ 下的目录名
         required: true
         type: string
+      keep-releases:
+        description: 该产品保留最近多少个 release，0 表示不清理
+        required: false
+        type: number
+        default: 10
 
 env:
   TZ: Asia/Shanghai
@@ -96,3 +101,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: gh release create "$TAG" "$FIRMWARE"/* --title "$TAG" --notes-file Release.md --target "$GITHUB_SHA"
+
+      - name: Prune old releases
+        if: inputs.keep-releases > 0
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: bash scripts/prune-releases.sh "$PRODUCT" "${{ inputs.keep-releases }}"
