@@ -5,7 +5,12 @@ set -euo pipefail
 
 # SONiC 全锥形 NAT
 git clone --depth 1 https://github.com/mufeng05/openwrt-sonic-fullcone.git tmp/sources/openwrt-sonic-fullcone
-bash tmp/sources/openwrt-sonic-fullcone/add_sonic_fullcone.sh
+bash tmp/sources/openwrt-sonic-fullcone/add_sonic_fullcone.sh | tee tmp/sonic-fullcone.log
+# 放不进去的补丁这个脚本只会跳过、照样返回成功，固件会悄悄缺少全锥形 NAT
+if ! grep -q "=== Done: [0-9]* applied, 0 skipped ===" tmp/sonic-fullcone.log; then
+  echo "add_sonic_fullcone.sh 跳过了部分补丁" >&2
+  exit 1
+fi
 
 # Argon 主题
 git clone --depth 1 https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon

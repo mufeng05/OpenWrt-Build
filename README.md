@@ -44,7 +44,7 @@ patches/r8168/                 # 备用补丁，目前没有产品使用（见�
 ## 构建流程
 
 1. 按 `product.env` 检出源码，执行 `feeds update` / `feeds install`
-2. `scripts/prepare-tree.sh`：复制 `files/`，运行 `customize.sh`，用 `config` 执行 `make defconfig`
+2. `scripts/prepare-tree.sh`：复制 `files/`，运行 `customize.sh`，用 `config` 执行 `make defconfig`，再检查 `config` 里选中的软件包都还在（上游删除或改名的包会被 defconfig 静默丢掉，这时直接让构建失败）
 3. 恢复 tools 和工具链缓存，`make download`，编译 tools 和工具链（命中缓存时跳过，未命中时编译完保存缓存）
 4. `make` 编译内核、软件包和固件
 5. 上传 `bin` 目录为 artifact（保留 7 天）
