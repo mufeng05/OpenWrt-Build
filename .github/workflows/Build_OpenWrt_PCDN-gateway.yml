@@ -2,9 +2,13 @@ name: Build OpenWrt PCDN gateway
 
 on:
   push:
+    paths:
+      - products/PCDN-gateway/**
+      - scripts/**
+      - .github/workflows/build.yml
+      - .github/workflows/Build_OpenWrt_PCDN-gateway.yml
   schedule:
     - cron: '0 0 * * *'
-  repository_dispatch:
   workflow_dispatch:
 
 jobs:

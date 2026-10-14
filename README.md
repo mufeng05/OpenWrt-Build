@@ -6,7 +6,7 @@
 
 | 产品 | 源码 | 定制内容 | 触发方式 |
 | --- | --- | --- | --- |
-| PCDN-gateway | openwrt/openwrt@main | SONiC 全锥形 NAT、Argon 主题、EasyTier | 每天 08:00、推送、手动 |
+| PCDN-gateway | openwrt/openwrt@main | SONiC 全锥形 NAT、Argon 主题、EasyTier | 每天 08:00、推送相关文件、手动 |
 | PCDN | openwrt/openwrt@main | Turbo ACC、Argon 主题、sysctl 调优 | 手动 |
 | PCDN-fw3 | openwrt/openwrt@main | Turbo ACC、Argon 主题、sysctl 调优 | 手动 |
 | PCDN-mwan | openwrt/openwrt@main | Turbo ACC、Argon 主题 | 手动 |
