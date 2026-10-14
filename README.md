@@ -6,7 +6,7 @@
 
 | 产品 | 源码 | 定制内容 | 触发方式 |
 | --- | --- | --- | --- |
-| PCDN-gateway | openwrt/openwrt@main | SONiC 全锥形 NAT、Argon 主题、EasyTier | 每天 08:00、推送相关文件、手动 |
+| PCDN-gateway | openwrt/openwrt@main | SONiC 全锥形 NAT、Argon 主题、EasyTier（每次构建取最新版本） | 每天 08:00、推送相关文件、手动 |
 | PCDN | openwrt/openwrt@main | Turbo ACC、Argon 主题、sysctl 调优 | 手动 |
 | PCDN-fw3 | openwrt/openwrt@main | Turbo ACC、Argon 主题、sysctl 调优 | 手动 |
 | PCDN-mwan | openwrt/openwrt@main | Turbo ACC、Argon 主题 | 手动 |
@@ -28,11 +28,12 @@
   Build_OpenWrt_<产品>.yml      # 各产品入口：触发条件 + 调用 build.yml
 products/<产品>/
   config                       # 配置（diffconfig 格式）
-  product.env                  # 源码仓库、分支，以及 CI 额外安装的主机软件包
+  product.env                  # 源码仓库、分支、CI 额外安装的主机软件包，以及传给编译过程的环境变量
   customize.sh                 # 可选：添加第三方软件包、打补丁等
   files/                       # 可选：直接放进固件的文件，如 etc/sysctl.d/99-custom.conf
 scripts/
   product-env.sh               # 读取 product.env
+  latest-release.sh            # 取 GitHub 仓库版本号最高的 release（含 pre-release）
   prepare-tree.sh              # 应用产品定制并生成 .config
   cache-keys.sh                # 计算 tools 和工具链缓存的 key
   build-toolchain.sh           # 编译 tools 和工具链，跳过已缓存的部分

@@ -17,3 +17,8 @@ git clone --depth 1 https://github.com/jerrykuku/luci-theme-argon.git package/lu
 
 # EasyTier
 git clone --depth 1 https://github.com/EasyTier/luci-app-easytier.git package/luci-app-easytier
+# CI 用 EASYTIER_VERSION 环境变量指定版本（见 product.env）。它能生效是因为软件包实际没有引入 version.mk，
+# 万一上游修好了，version.mk 里的赋值会盖过环境变量，所以把版本也写进去
+if [ -n "${EASYTIER_VERSION:-}" ]; then
+  sed -i "s/^EASYTIER_VERSION=.*/EASYTIER_VERSION=$EASYTIER_VERSION/" package/luci-app-easytier/version.mk
+fi
