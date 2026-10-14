@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 整理编译产物并生成 release 说明。
 # 用法: scripts/collect-firmware.sh <OpenWrt 源码目录> <release 说明输出文件>
-# 需要环境变量 OPENWRT_REPO、OPENWRT_REF、OPENWRT_SHA。
+# 需要环境变量 OPENWRT_REPO、OPENWRT_REF、OPENWRT_SHA，第三方仓库的提交从源码树里读取。
 # 按 KEY=value 输出 FIRMWARE=<固件目录>（CI 中追加到 $GITHUB_ENV）。
 set -euo pipefail
 shopt -s nullglob
@@ -31,7 +31,14 @@ fi
 {
   echo "# Sources"
   echo
-  echo "OpenWrt: [$OPENWRT_REPO@$OPENWRT_REF](https://github.com/$OPENWRT_REPO/tree/$OPENWRT_REF) ([\`$OPENWRT_SHA\`](https://github.com/$OPENWRT_REPO/tree/$OPENWRT_SHA))"
+  echo "- OpenWrt: [$OPENWRT_REPO@$OPENWRT_REF](https://github.com/$OPENWRT_REPO/tree/$OPENWRT_REF) ([\`$OPENWRT_SHA\`](https://github.com/$OPENWRT_REPO/tree/$OPENWRT_SHA))"
+  # 产品定制 clone 的第三方仓库跟的是默认分支，记下这次实际用到的提交
+  for git_dir in "$openwrt"/package/*/.git "$openwrt"/tmp/sources/*/.git; do
+    dir=${git_dir%/.git}
+    url=$(git -C "$dir" remote get-url origin)
+    sha=$(git -C "$dir" rev-parse HEAD)
+    echo "- ${dir##*/}: [\`${sha:0:7}\`](${url%.git}/tree/$sha)"
+  done
   echo
   echo "# Kernel Version"
   echo

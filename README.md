@@ -48,7 +48,7 @@ patches/r8168/                 # 备用补丁，目前没有产品使用（见�
 3. 恢复 tools 和工具链缓存，`make download`，编译 tools 和工具链（命中缓存时跳过，未命中时编译完保存缓存）
 4. `make` 编译内核、软件包和固件
 5. 上传 `bin` 目录为 artifact（保留 7 天）
-6. 创建 release，tag 为 `OpenWrt-<产品>_<平台>_<日期>`，说明中包含源码 commit、内核版本和镜像的 SHA256
+6. 创建 release，tag 为 `OpenWrt-<产品>_<平台>_<日期>`，说明中包含 OpenWrt 和第三方仓库实际用到的 commit、内核版本和镜像的 SHA256
 7. 只保留该产品最近 10 个 release，更早的连同 tag 一起删除（在产品入口 workflow 中用 `keep-releases` 调整，`0` 表示不清理）
 
 ## 构建缓存
@@ -82,6 +82,8 @@ make menuconfig
 
 1. 新建 `products/<产品>/`，放入 `config`，按需添加 `product.env`、`customize.sh`、`files/`
 2. 复制一个 `.github/workflows/Build_OpenWrt_<产品>.yml`，修改 `name` 和 `product`
+
+`customize.sh` 里的第三方仓库请 clone 到 `package/`（软件包）或 `tmp/sources/`（只用其中的脚本），release 说明会自动记录它们这次用到的提交。
 
 ## 备用补丁
 
