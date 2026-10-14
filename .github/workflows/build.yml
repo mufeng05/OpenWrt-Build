@@ -1,0 +1,103 @@
+# 通用构建流程，由各产品的 Build_OpenWrt_*.yml 调用。
+# 产品的源码仓库、定制脚本与配置都放在 products/<产品名>/ 下，见 README。
+name: Build OpenWrt
+
+on:
+  workflow_call:
+    inputs:
+      product:
+        description: 产品名，即 products/ 下的目录名
+        required: true
+        type: string
+
+env:
+  TZ: Asia/Shanghai
+  PRODUCT: ${{ inputs.product }}
+
+jobs:
+  build:
+    name: ${{ inputs.product }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    concurrency:
+      group: build-${{ inputs.product }}
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Load product settings
+        run: |
+          bash scripts/product-env.sh "$PRODUCT" | tee -a "$GITHUB_ENV"
+          echo "DATE=$(date +%Y%m%d_%H%M%S)" | tee -a "$GITHUB_ENV"
+
+      - name: Install build dependencies
+        run: |
+          echo "CPU: $(nproc) x $(lscpu | sed -n 's/^Model name: *//p')"
+          free -h
+          df -h "$GITHUB_WORKSPACE"
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang flex bison g++ gawk \
+            gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev \
+            python3-setuptools rsync swig unzip zlib1g-dev file wget
+          for deb in $HOST_DEBS; do
+            wget -q -O "$RUNNER_TEMP/host.deb" "$deb"
+            sudo dpkg -i "$RUNNER_TEMP/host.deb"
+          done
+
+      - name: Checkout OpenWrt source
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.OPENWRT_REPO }}
+          ref: ${{ env.OPENWRT_REF }}
+          path: openwrt
+
+      - name: Update and install feeds
+        working-directory: openwrt
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Apply product customization
+        run: |
+          bash scripts/prepare-tree.sh "$PRODUCT" openwrt
+          board=$(sed -n 's/^CONFIG_TARGET_BOARD="\(.*\)"$/\1/p' openwrt/.config)
+          subtarget=$(sed -n 's/^CONFIG_TARGET_SUBTARGET="\(.*\)"$/\1/p' openwrt/.config)
+          {
+            echo "DEVICE=${board}_${subtarget}"
+            echo "TAG=OpenWrt-${PRODUCT}_${board}_${subtarget}_${DATE}"
+            echo "OPENWRT_SHA=$(git -C openwrt rev-parse HEAD)"
+          } | tee -a "$GITHUB_ENV"
+
+      - name: Download sources
+        working-directory: openwrt
+        run: make download -j8 || make download -j1 V=s
+
+      - name: Compile firmware
+        working-directory: openwrt
+        run: make -j"$(nproc)" || make -j1 V=s
+
+      - name: Upload bin directory
+        uses: actions/upload-artifact@v7
+        with:
+          name: OpenWrt-${{ inputs.product }}_bin_${{ env.DEVICE }}_${{ env.DATE }}
+          path: openwrt/bin
+
+      - name: Organize firmware
+        run: bash scripts/collect-firmware.sh openwrt Release.md | tee -a "$GITHUB_ENV"
+
+      - name: Upload firmware directory
+        uses: actions/upload-artifact@v7
+        with:
+          name: OpenWrt-${{ inputs.product }}_firmware_${{ env.DEVICE }}_${{ env.DATE }}
+          path: ${{ env.FIRMWARE }}
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release create "$TAG" "$FIRMWARE"/* --title "$TAG" --notes-file Release.md --target "$GITHUB_SHA"
