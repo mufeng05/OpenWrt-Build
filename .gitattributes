@@ -1,0 +1,3 @@
+* text=auto eol=lf
+# 补丁按原样保存，不做换行转换
+*.patch -text
