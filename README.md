@@ -34,6 +34,8 @@ products/<产品>/
 scripts/
   product-env.sh               # 读取 product.env
   prepare-tree.sh              # 应用产品定制并生成 .config
+  cache-keys.sh                # 计算 tools 和工具链缓存的 key
+  build-toolchain.sh           # 编译 tools 和工具链，跳过已缓存的部分
   collect-firmware.sh          # 整理固件、生成 release 说明
   prune-releases.sh            # 清理旧 release
 patches/r8168/                 # 备用补丁，目前没有产品使用（见下文）
@@ -43,10 +45,20 @@ patches/r8168/                 # 备用补丁，目前没有产品使用（见�
 
 1. 按 `product.env` 检出源码，执行 `feeds update` / `feeds install`
 2. `scripts/prepare-tree.sh`：复制 `files/`，运行 `customize.sh`，用 `config` 执行 `make defconfig`
-3. `make download`，`make`
-4. 上传 `bin` 目录为 artifact（保留 7 天）
-5. 创建 release，tag 为 `OpenWrt-<产品>_<平台>_<日期>`，说明中包含源码 commit、内核版本和镜像的 SHA256
-6. 只保留该产品最近 10 个 release，更早的连同 tag 一起删除（在产品入口 workflow 中用 `keep-releases` 调整，`0` 表示不清理）
+3. 恢复 tools 和工具链缓存，`make download`，编译 tools 和工具链（命中缓存时跳过，未命中时编译完保存缓存）
+4. `make` 编译内核、软件包和固件
+5. 上传 `bin` 目录为 artifact（保留 7 天）
+6. 创建 release，tag 为 `OpenWrt-<产品>_<平台>_<日期>`，说明中包含源码 commit、内核版本和镜像的 SHA256
+7. 只保留该产品最近 10 个 release，更早的连同 tag 一起删除（在产品入口 workflow 中用 `keep-releases` 调整，`0` 表示不清理）
+
+## 构建缓存
+
+tools（主机工具）和工具链约占编译时间的一半，而且大多数日子与前一天完全相同，因此缓存在 GitHub Actions cache 中：
+
+- tools：所有产品共用，上游 `tools/` 的内容或按配置启用的工具变化时重建
+- 工具链：每个产品单独缓存，上游 `toolchain/` 的内容、工具链相关配置、内核大版本或产品对内核补丁的改动变化时重建；另外每月重建一次
+
+缓存 7 天未使用会被 GitHub 清除，所以偶尔手动构建的产品通常需要从头编译。怀疑缓存有问题时，在 Actions → Caches 页面删除对应缓存即可。
 
 ## 修改配置
 

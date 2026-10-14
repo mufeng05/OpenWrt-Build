@@ -78,9 +78,44 @@ jobs:
             echo "OPENWRT_SHA=$(git -C openwrt rev-parse HEAD)"
           } | tee -a "$GITHUB_ENV"
 
+      - name: Compute cache keys
+        id: cache-keys
+        run: bash scripts/cache-keys.sh "$PRODUCT" openwrt | tee -a "$GITHUB_OUTPUT"
+
+      - name: Restore tools cache
+        id: tools-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: openwrt/staging_dir/host
+          key: ${{ steps.cache-keys.outputs.tools }}
+
+      - name: Restore toolchain cache
+        id: toolchain-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: openwrt/staging_dir/toolchain-*
+          key: ${{ steps.cache-keys.outputs.toolchain }}
+
       - name: Download sources
         working-directory: openwrt
         run: make download -j8 || make download -j1 V=s
+
+      - name: Build tools and toolchain
+        run: bash scripts/build-toolchain.sh openwrt
+
+      - name: Save tools cache
+        if: steps.tools-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: openwrt/staging_dir/host
+          key: ${{ steps.cache-keys.outputs.tools }}
+
+      - name: Save toolchain cache
+        if: steps.toolchain-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: openwrt/staging_dir/toolchain-*
+          key: ${{ steps.cache-keys.outputs.toolchain }}
 
       - name: Compile firmware
         working-directory: openwrt
