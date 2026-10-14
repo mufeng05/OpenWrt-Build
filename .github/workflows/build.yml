@@ -86,15 +86,10 @@ jobs:
         with:
           name: OpenWrt-${{ inputs.product }}_bin_${{ env.DEVICE }}_${{ env.DATE }}
           path: openwrt/bin
+          retention-days: 7
 
       - name: Organize firmware
         run: bash scripts/collect-firmware.sh openwrt Release.md | tee -a "$GITHUB_ENV"
-
-      - name: Upload firmware directory
-        uses: actions/upload-artifact@v7
-        with:
-          name: OpenWrt-${{ inputs.product }}_firmware_${{ env.DEVICE }}_${{ env.DATE }}
-          path: ${{ env.FIRMWARE }}
 
       - name: Create release
         env:

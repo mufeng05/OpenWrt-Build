@@ -43,7 +43,7 @@ patches/r8168/                 # 备用补丁，目前没有产品使用（见�
 1. 按 `product.env` 检出源码，执行 `feeds update` / `feeds install`
 2. `scripts/prepare-tree.sh`：复制 `files/`，运行 `customize.sh`，用 `config` 执行 `make defconfig`
 3. `make download`，`make`
-4. 上传 `bin` 目录和固件目录为 artifact
+4. 上传 `bin` 目录为 artifact（保留 7 天）
 5. 创建 release，tag 为 `OpenWrt-<产品>_<平台>_<日期>`，说明中包含源码 commit、内核版本和镜像的 SHA256
 
 ## 修改配置
